@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800;1,900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #C8A84B;
+  --gold-light: #E8C86A;
+  --gold-dark: #A8883B;
+  --cyan: #FFFFFF;
+  --cryan2: #aeaeae;
+  --cyan-dark: #FFFFFF;
+  --bg: #0A0A0A;
+  --surface: #141414;
+  --surface-2: #1E1E1E;
+  --border: #2A2A2A;
+  --text: #FFFFFF;
+  --btn-g:#000000;          
+  --text-muted: #888888;
+  --text-dim: #555555;
+}
+html {
+  scroll-behavior: smooth;
+}
+#inscription,
+#offres {
+  scroll-margin-top: 80px;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-bebas { font-family: 'Bebas Neue', sans-serif; }
+.font-syne { font-family: 'Syne', sans-serif; }
+.font-inter { font-family: 'Inter', sans-serif; }
+
+/* Gold accent */
+.text-gold { color: var(--gold); }
+.bg-gold { background-color: var(--gold); }
+.border-gold { border-color: var(--gold); } 
+
+/* Diagonal section clip */
+.clip-diagonal {
+  clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+}
+.clip-diagonal-reverse {
+  clip-path: polygon(0 8%, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Card styles */
+.card-sport {
+  background: #141414;
+  border: 1px solid #1E1E1E;
+  transition: all 0.3s ease;
+}
+.card-sport:hover {
+  background: #1A1A1A;
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+
+/* Hero overlay */
+.hero-overlay {
+  background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 60%, rgba(200,168,75,0.1) 100%);
+}
+
+/* Badge */
+.badge {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+
+/* Gold button */
+.btn-gold {
+  background: var(--gold);
+  color: #000;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.25s ease;
+  border: 2px solid var(--gold);
+}
+.btn-gold:hover {
+  background: transparent;
+  color: var(--gold);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--gold);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.25s ease;
+  border: 2px solid var(--gold);
+}
+.btn-outline:hover {
+  background: var(--gold);
+  color: #000;
+}
+
+/* Section label */
+.section-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* Marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Fade in */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+/* Line decoration */
+.gold-line {
+  width: 60px;
+  height: 3px;
+  background: var(--gold);
+  display: block;
+}
+.btn-cyan { display: inline-flex; align-items: center; gap: 8px; background: #C8A84B; color: #000; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; padding: 10px 22px; border-radius: 24px; border: none; cursor: pointer; text-decoration: none; transition: all 0.25s ease; white-space: nowrap; }
+.btn-cyan:hover { background: #E8C86A; transform: translateY(-1px); }
+
+.btn-gold { display: inline-flex; align-items: center; gap: 8px; background: var(--gold); color: #000; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; padding: 10px 22px; border-radius: 24px; border: none; cursor: pointer; text-decoration: none; transition: all 0.25s ease; }
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+.btn-ghost { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--btn-g); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; padding: 10px 22px; border-radius: 24px; border: 2px solid var(--border); cursor: pointer; text-decoration: none; transition: all 0.25s ease; }
+.btn-ghost:hover { border-color: var(--cryan2); color: var(--cryan2); }    
+  
+
+
+#offres, #inscription { scroll-margin-top: 80px; }
+.hide-footer-banner .footer-banner { display: none; }
+
+.tag-cyan { display: inline-flex; align-items: center; gap: 5px; background: rgba(0,195,208,0.12); color: var(--cyan); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(0,195,208,0.2); }
+.tag-gold { display: inline-flex; align-items: center; background: rgba(200,168,75,0.12); color: var(--gold); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(200,168,75,0.2); }
+.tag-dark { display: inline-flex; align-items: center; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; }
