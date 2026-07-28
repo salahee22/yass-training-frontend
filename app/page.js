@@ -16,7 +16,7 @@ const heroSlides = [
     id: 1,
     label: 'YASS TRAINING',
     title: 'Accompagner les stars de demain',
-    desc: 'La plateforme qui transforme les jeunes talents en champions. Articles, entraînements et coaching Elite.',
+    desc: 'Articles, entraînements et coaching Elite.',
     cta: null,
     image: 'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1600&q=80',
     tag: 'Yass Training',
@@ -34,7 +34,7 @@ const heroSlides = [
     id: 3,
     label: 'ENTRAÎNEMENTS',
     title: 'Programmes adaptés à votre niveau',
-    desc: "Exercices structurés par âge, thème et objectif. Du U7 jusqu'au Senior, pour joueurs et gardiens.",
+    desc: "Exercices structurés par âge, thème et objectif. Du U7 jusqu'au Senior.",
     cta: { label: 'Voir plus ', href: '/training' },
     image: 'https://res.cloudinary.com/imsyp8wq/image/upload/v1783517947/ball_hwpeer.jpg',
     tag: 'Entraînement',
@@ -43,7 +43,7 @@ const heroSlides = [
     id: 4,
     label: 'PROGRAMME ELITE',
     title: 'Atteignez votre meilleur niveau',
-    desc: "Coaching personnalisé, analyse vidéo, préparation physique. Réservé aux joueurs qui visent le sommet.",
+    desc: "Coaching personnalisé, analyse vidéo, préparation physique. ",
     cta: { label: "Rejoindre l'Elite ", href: '/elite' },
     image: 'https://res.cloudinary.com/imsyp8wq/image/upload/v1783517999/cycle_zz5qc2.jpg',
     tag: 'Elite session',
@@ -71,7 +71,7 @@ function HeroSlider() {
   const slide = heroSlides[current]
 
   return (
-    <section style={{ position: 'relative', height: '100vh', minHeight: '600px', overflow: 'hidden' }}>
+    <section className="heroSection" style={{ position: 'relative', height: '100vh', minHeight: '600px', overflow: 'hidden' }}>
 
       {/* BG images */}
       {heroSlides.map((s, i) => (
@@ -91,10 +91,10 @@ function HeroSlider() {
 
       {/* Content */}
       <div style={{ position: 'relative', zIndex: 2, height: '100%', display: 'flex', alignItems: 'center' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 48px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="heroInner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 48px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
           {/* Left */}
-          <div style={{ maxWidth: '680px' }}>
+          <div className="heroLeft" style={{ maxWidth: '680px' }}>
 
             {/* Label */}
             <span style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '12px' }}>
@@ -109,9 +109,9 @@ function HeroSlider() {
             </div>
 
             {/* Title */}
-            <h1 key={`title-${current}`} style={{
+            <h1 key={`title-${current}`} className="heroTitle" style={{
               fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 800,
-              fontSize: 'clamp(42px, 6vw, 42px)', lineHeight: '1.0',
+              fontSize: 'clamp(30px, 7vw, 42px)', lineHeight: '1.05',
               color: '#FFFFFF', marginBottom: '24px',
               animation: 'slideUp 0.6s ease forwards',
             }}>
@@ -135,7 +135,7 @@ function HeroSlider() {
                 {slide.cta.label} <ArrowRight size={15} />
               </Link>
             ) : (
-              <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <Link href="/football" className="btn-cyan" style={{ fontSize: '13px', padding: '12px 24px' }}>
                   Découvrir <ArrowRight size={15} />
                 </Link>
@@ -146,8 +146,9 @@ function HeroSlider() {
             )}
           </div>
 
-          {/* Right — slide list */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* Right — slide list, caché sur mobile (les dots en bas suffisent) */}
+          {/* Right — slide list, caché sur mobile (les dots en bas suffisent) */}
+          <div className="heroSlideList">
             {heroSlides.map((s, i) => (
               <button
                 key={s.id}
@@ -191,10 +192,28 @@ function HeroSlider() {
       {/* Bottom fade */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '120px', background: 'linear-gradient(to top, #0A0A0A, transparent)', zIndex: 2, pointerEvents: 'none' }} />
 
-      <style>{`
+      <style jsx>{`
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        .heroSlideList {
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 900px) {
+  .heroSlideList {
+    display: none !important;
+  }
+  .heroInner {
+    padding: 0 24px !important;
+    justify-content: flex-start !important;
+  }
+}
+        @media (max-width: 480px) {
+          .heroSection {
+            min-height: 560px !important;
+          }
         }
       `}</style>
     </section>
@@ -237,7 +256,7 @@ export default function HomePage() {
               Tout pour progresser
             </h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', alignItems: 'stretch' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '24px', alignItems: 'stretch' }}>
             {features.map((feat, i) => (
               <Link key={i} href={feat.href} style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
                 <div
@@ -278,7 +297,7 @@ export default function HomePage() {
             </Link>
           </div>
           {articles.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'stretch' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: '24px', alignItems: 'stretch' }}>
               {articles.map((article) => (
                 <ArticleCard key={article._id} article={article} />
               ))}
@@ -301,7 +320,7 @@ export default function HomePage() {
             </Link>
           </div>
           {exercises.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'stretch' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: '24px', alignItems: 'stretch' }}>
               {exercises.map((ex) => (
                 <ExerciseCard key={ex._id} exercise={ex} />
               ))}

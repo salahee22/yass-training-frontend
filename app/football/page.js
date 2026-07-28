@@ -64,8 +64,8 @@ export default function FootballPage() {
           backgroundSize: 'cover', backgroundPosition: 'center',
         }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 100%)' }} />
-        <div style={{ position: 'relative', maxWidth: '1280px', margin: '0 auto', padding: '0 24px', width: '100%' }}>
-          <h1 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 900, fontSize: 'clamp(50px, 8vw, 90px)', lineHeight: '0.95', color: '#FFFFFF', marginBottom: '20px' }}>
+        <div className="heroContent" style={{ position: 'relative', maxWidth: '1280px', margin: '0 auto', padding: '0 24px', width: '100%' }}>
+          <h1 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 900, fontSize: 'clamp(34px, 8vw, 90px)', lineHeight: '1.0', color: '#FFFFFF', marginBottom: '20px', wordBreak: 'break-word' }}>
             Football<br /><span style={{ color: '#C8A84B' }}>Articles</span>
           </h1>
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '17px', lineHeight: '1.65', color: 'rgba(255,255,255,0.6)', maxWidth: '500px', marginBottom: '32px' }}>
@@ -78,7 +78,7 @@ export default function FootballPage() {
       </section>
 
       {/* RECENT — grille simple à 3 colonnes */}
-      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 24px 60px', background: '#F1F1F1' }}>
+      <section className="pageSection" style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 24px 60px', background: '#F1F1F1' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
           <div>
             <span style={{ fontFamily: 'Syne, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#C8A84B', display: 'block', marginBottom: '10px' }}>À la une</span>
@@ -86,7 +86,7 @@ export default function FootballPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '32px', marginBottom: '80px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))', gap: '32px', marginBottom: '80px' }}>
           {allArticles.slice(0, 3).map(article => (
             <ArticleCard key={article._id} article={article} featured />
           ))}
@@ -101,10 +101,10 @@ export default function FootballPage() {
       </section>
 
       {/* FILTERS + ALL ARTICLES */}
-      <section id="articles" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px 100px', background: '#F1F1F1' }}>
+      <section id="articles" className="pageSection" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px 100px', background: '#F1F1F1' }}>
 
         {/* Filter bar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px', flexWrap: 'wrap' }}>
+        <div className="filterBar" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px', flexWrap: 'wrap' }}>
           <MultiDropdown
             label="Age"
             options={ageFilters}
@@ -136,7 +136,7 @@ export default function FootballPage() {
           </div>
         ) : (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '32px', marginBottom: '40px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))', gap: '32px', marginBottom: '40px' }}>
               {visible.map(article => (
                 <ArticleCard key={article._id} article={article} />
               ))}
@@ -153,6 +153,22 @@ export default function FootballPage() {
           </>
         )}
       </section>
+
+      <style jsx global>{`
+        @media (max-width: 380px) {
+          .pageSection {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+          .heroContent {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+          .filterBar {
+            gap: 8px !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

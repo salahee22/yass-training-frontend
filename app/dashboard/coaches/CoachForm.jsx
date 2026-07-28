@@ -66,7 +66,7 @@ export default function CoachForm({ initialData, coachId }) {
       <label style={labelStyle}>Spécialité</label>
       <input style={inputStyle} placeholder="ex: Technique & Tactique" value={form.specialite} onChange={e => update('specialite', e.target.value)} required />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+      <div className="formGrid2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
         <div>
           <label style={labelStyle}>Expérience</label>
           <input style={inputStyle} placeholder="ex: 12 ans" value={form.experience || ''} onChange={e => update('experience', e.target.value)} />
@@ -80,7 +80,7 @@ export default function CoachForm({ initialData, coachId }) {
       <label style={labelStyle}>Photo (URL)</label>
       <input style={inputStyle} value={form.image || ''} onChange={e => update('image', e.target.value)} />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+      <div className="formGrid2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
         <div>
           <label style={labelStyle}>Couleur accent</label>
           <input type="color" style={{ ...inputStyle, height: '40px', padding: '4px' }} value={form.color} onChange={e => update('color', e.target.value)} />
@@ -100,6 +100,14 @@ export default function CoachForm({ initialData, coachId }) {
           <Save size={15} /> {saving ? 'Enregistrement...' : isEdit ? 'Mettre à jour' : 'Créer le coach'}
         </button>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 480px) {
+          .formGrid2col {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </form>
   )
 }

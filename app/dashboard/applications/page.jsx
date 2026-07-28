@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Check, X, Trash2, Phone, Mail, Copy } from 'lucide-react'
+import { Check, X, Trash2, Phone, Mail, Copy, KeyRound } from 'lucide-react'
 
 const STATUS_LABELS = {
   nouvelle: { label: 'Nouvelle', color: '#00C3D0' },
@@ -14,6 +14,7 @@ export default function DashboardApplications() {
   const [loading, setLoading] = useState(true)
   const [busyId, setBusyId] = useState(null)
   const [filter, setFilter] = useState('')
+  const [copiedId, setCopiedId] = useState(null)
 
   useEffect(() => {
     fetchApplications()
@@ -73,13 +74,6 @@ export default function DashboardApplications() {
       }
 
       setApplications(prev => prev.map(a => a._id === id ? json.data.application : a))
-
-      if (json.data.temp_password) {
-        const info = `Compte créé !\n\nEmail: ${json.data.user.email}\nMot de passe temporaire: ${json.data.temp_password}\n\n⚠️ Ce mot de passe ne sera plus jamais affiché. Communique-le au joueur maintenant.`
-        alert(info)
-      } else {
-        alert('Abonnement ajouté au compte existant de ce joueur.')
-      }
     } catch (err) {
       alert('Erreur réseau')
     } finally {
@@ -107,6 +101,13 @@ export default function DashboardApplications() {
     } finally {
       setBusyId(null)
     }
+  }
+
+  function handleCopy(app) {
+    const text = `Email: ${app.email}\nMot de passe temporaire: ${app.temp_password}`
+    navigator.clipboard.writeText(text)
+    setCopiedId(app._id)
+    setTimeout(() => setCopiedId(null), 2000)
   }
 
   const filterOptions = [
@@ -178,6 +179,23 @@ export default function DashboardApplications() {
                   <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#CCC', background: '#1A1A1A', padding: '10px 12px', borderRadius: '6px', marginBottom: '12px' }}>
                     {app.message}
                   </p>
+                )}
+
+                {app.status === 'acceptee' && app.temp_password && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', background: 'rgba(200,168,75,0.1)', border: '1px solid rgba(200,168,75,0.3)', borderRadius: '8px', padding: '12px 14px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <KeyRound size={14} color="#C8A84B" />
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#C8A84B', fontWeight: 700 }}>
+                        Mot de passe temporaire : {app.temp_password}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleCopy(app)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#1E1E1E', color: '#FFF', fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, padding: '6px 12px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
+                    >
+                      <Copy size={12} /> {copiedId === app._id ? 'Copié !' : 'Copier'}
+                    </button>
+                  </div>
                 )}
 
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>

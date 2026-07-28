@@ -122,7 +122,7 @@ export default function PerformancePage() {
             </p>
           )}
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+          <div className="valueUniteGrid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             <div>
               <label style={labelStyle}>Valeur</label>
               <input type="number" step="any" style={inputStyle} placeholder="ex: 72.5" value={form.value} onChange={e => setForm(p => ({ ...p, value: e.target.value }))} />
@@ -142,6 +142,14 @@ export default function PerformancePage() {
           <button type="submit" disabled={saving} style={{ ...btnGold, opacity: saving ? 0.6 : 1 }}>
             {saving ? 'Enregistrement...' : 'Enregistrer'}
           </button>
+
+          <style jsx>{`
+            @media (max-width: 420px) {
+              .valueUniteGrid {
+                grid-template-columns: 1fr !important;
+              }
+            }
+          `}</style>
         </form>
       )}
 
@@ -167,7 +175,7 @@ export default function PerformancePage() {
 
 function ConsistencySection() {
   const [loading, setLoading] = useState(true)
-  const [weekStats, setWeekStats] = useState([]) // [{ week_num, total, completed, restDaysCount }]
+  const [weekStats, setWeekStats] = useState([])
   const [programDesc, setProgramDesc] = useState(null)
 
   useEffect(() => {
@@ -188,7 +196,6 @@ function ConsistencySection() {
         return
       }
 
-      // On prend le programme le plus récent
       const latestProgram = [...programs].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]
       setProgramDesc(latestProgram.description || 'Programme personnalisé')
 
@@ -198,7 +205,6 @@ function ConsistencySection() {
 
       const restDays = latestProgram.rest_days || []
 
-      // Regroupe par semaine : total assigné, complétés, jours d'entraînement distincts touchés
       const byWeek = {}
       entries.forEach(entry => {
         const w = entry.week_num
@@ -208,7 +214,6 @@ function ConsistencySection() {
         byWeek[w].daysWithActivity.add(entry.day_num)
       })
 
-      // Jour "complété" = tous les exercices de ce jour sont cochés
       Object.keys(byWeek).forEach(w => {
         const dayGroups = {}
         entries.filter(e => e.week_num === Number(w)).forEach(e => {
@@ -250,25 +255,23 @@ function ConsistencySection() {
         <Activity size={13} /> Assiduité — {programDesc}
       </p>
 
-      {/* Chiffres clés */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
+      <div className="statBoxGrid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
         <StatBox label="Dernière semaine" value={`${latest.completed}/${latest.total}`} sub="exercices faits" />
         <StatBox label="Taux dernière semaine" value={`${latestPct}%`} sub="complétion" />
         <StatBox label="Jours d'entraînement" value={`${latest.trainingDaysDone}/${latest.trainingDaysPlanned}`} sub="terminés" />
       </div>
 
-      {/* Comparaison entre semaines */}
       {weekStats.length > 1 && (
         <div>
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#666', marginBottom: '10px' }}>
             Évolution par semaine · moyenne globale : {avgPct}%
           </p>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '70px', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '70px', marginBottom: '10px', overflowX: 'auto' }}>
             {weekStats.map(w => {
               const pct = w.total > 0 ? (w.completed / w.total) * 100 : 0
               const isLatest = w.week_num === latest.week_num
               return (
-                <div key={w.week_num} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                <div key={w.week_num} style={{ flex: '1 0 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                   <div
                     title={`Semaine ${w.week_num} : ${w.completed}/${w.total} (${Math.round(pct)}%)`}
                     style={{
@@ -290,6 +293,14 @@ function ConsistencySection() {
           Aucun exercice assigné pour l'instant sur ce programme.
         </p>
       )}
+
+      <style jsx>{`
+        @media (max-width: 380px) {
+          .statBoxGrid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
@@ -356,15 +367,15 @@ function MetricGroup({ unite, records, onDelete }) {
 
       <div style={{ borderTop: '1px solid #1E1E1E', paddingTop: '12px' }}>
         {[...sorted].reverse().map(r => (
-          <div key={r._id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 0', borderBottom: '1px solid #1A1A1A' }}>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#666', width: '80px', flexShrink: 0 }}>
+          <div key={r._id} className="recordRow" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 0', borderBottom: '1px solid #1A1A1A', flexWrap: 'wrap' }}>
+            <span className="recordDate" style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#666', width: '80px', flexShrink: 0 }}>
               {new Date(r.record_date).toLocaleDateString('fr-FR')}
             </span>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#FFF', width: '70px', flexShrink: 0 }}>
+            <span className="recordValue" style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#FFF', width: '70px', flexShrink: 0 }}>
               {r.value} {unite}
             </span>
             {r.notes && (
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#888', flex: 1, minWidth: 0 }}>
+              <span className="recordNotes" style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#888', flex: 1, minWidth: 0 }}>
                 {r.notes}
               </span>
             )}
@@ -374,6 +385,33 @@ function MetricGroup({ unite, records, onDelete }) {
           </div>
         ))}
       </div>
+
+      <style jsx>{`
+        @media (max-width: 420px) {
+          .recordRow {
+            position: relative;
+            padding-right: 28px !important;
+          }
+          .recordDate {
+            width: auto !important;
+            order: 1;
+          }
+          .recordValue {
+            width: auto !important;
+            order: 2;
+          }
+          .recordNotes {
+            order: 4;
+            flex-basis: 100% !important;
+            margin-top: 4px;
+          }
+          .recordRow > button {
+            position: absolute;
+            top: 8px;
+            right: 0;
+          }
+        }
+      `}</style>
     </div>
   )
 }

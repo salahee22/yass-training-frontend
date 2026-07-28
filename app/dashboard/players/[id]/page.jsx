@@ -118,7 +118,7 @@ export default function PlayerDetailPage({ params }) {
 
       <SubscriptionSection playerId={id} />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
         <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '13px', fontWeight: 700, color: '#FFF' }}>Programmes</p>
         {!showNewProgramForm && (
           <button onClick={() => setShowNewProgramForm(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px', ...btnGold }}>
@@ -137,7 +137,7 @@ export default function PlayerDetailPage({ params }) {
             value={newProgramDescription}
             onChange={e => setNewProgramDescription(e.target.value)}
           />
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button type="submit" disabled={creatingProgram} style={btnGold}>
               {creatingProgram ? 'Création...' : 'Créer'}
             </button>
@@ -223,7 +223,7 @@ function SubscriptionSection({ playerId }) {
 
   return (
     <div style={{ background: '#141414', border: '1px solid #1E1E1E', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
         <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '12px', fontWeight: 700, color: '#FFF' }}>Abonnement</p>
         {!showForm && (
           <button onClick={() => setShowForm(true)} style={{ background: '#C8A84B', color: '#000', fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '12px', padding: '7px 12px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}>
@@ -290,23 +290,30 @@ function ProgramCard({ program }) {
     }
   }
 
-  async function toggleRestDay(day) {
-    const updated = restDays.includes(day) ? restDays.filter(d => d !== day) : [...restDays, day]
-    setRestDays(updated)
-    setSavingRest(true)
-    try {
-      const token = localStorage.getItem('admin_token')
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/programmes/${program._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ rest_days: updated }),
-      })
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setSavingRest(false)
+ async function toggleRestDay(day) {
+  const updated = restDays.includes(day) ? restDays.filter(d => d !== day) : [...restDays, day]
+  const previous = restDays
+  setRestDays(updated)
+  setSavingRest(true)
+  try {
+    const token = localStorage.getItem('admin_token')
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/programmes/${program._id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ rest_days: updated }),
+    })
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}))
+      setRestDays(previous) // rollback si échec
+      alert(json.message || 'Erreur lors de la sauvegarde des jours de repos')
     }
+  } catch (err) {
+    setRestDays(previous)
+    alert('Erreur réseau')
+  } finally {
+    setSavingRest(false)
   }
+}
 
   async function handleRemoveExercice(entryId) {
     if (!confirm('Retirer cet exercice du programme ?')) return
@@ -657,7 +664,7 @@ function WeekForm({ program, defaultWeekNum, onCancel, onSaved }) {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', marginTop: '18px', paddingTop: '16px', borderTop: '1px solid #1E1E1E' }}>
+      <div style={{ display: 'flex', gap: '8px', marginTop: '18px', paddingTop: '16px', borderTop: '1px solid #1E1E1E', flexWrap: 'wrap' }}>
         <button onClick={handleSave} disabled={saving} style={btnGold}>
           {saving ? 'Enregistrement...' : `Enregistrer la semaine${totalRows > 0 ? ` (${totalRows})` : ''}`}
         </button>
@@ -677,13 +684,13 @@ function DayBlock({ day, exercises, meals, onAddExercise, onUpdateExercise, onRe
       </p>
 
       {exercises.map((row, idx) => (
-        <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 70px 90px 80px 1fr auto', gap: '6px', marginBottom: '6px', alignItems: 'center' }}>
+        <div key={idx} className="exerciseRow" style={{ display: 'grid', gridTemplateColumns: '2fr 70px 90px 80px 1fr auto', gap: '6px', marginBottom: '6px', alignItems: 'center' }}>
           <input style={inputStyle} placeholder="Nom (ex: Squat)" value={row.name} onChange={e => onUpdateExercise(idx, 'name', e.target.value)} />
           <input type="number" min="0" style={inputStyle} placeholder="Séries" value={row.sets} onChange={e => onUpdateExercise(idx, 'sets', e.target.value)} />
           <input style={inputStyle} placeholder="Reps" value={row.reps} onChange={e => onUpdateExercise(idx, 'reps', e.target.value)} />
           <input style={inputStyle} placeholder="Repos" value={row.rest} onChange={e => onUpdateExercise(idx, 'rest', e.target.value)} />
           <input style={inputStyle} placeholder="Notes" value={row.notes} onChange={e => onUpdateExercise(idx, 'notes', e.target.value)} />
-          <button type="button" onClick={() => onRemoveExercise(idx)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}><X size={14} /></button>
+          <button type="button" onClick={() => onRemoveExercise(idx)} className="rowDeleteBtn" style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}><X size={14} /></button>
         </div>
       ))}
       <button type="button" onClick={onAddExercise} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', color: '#C8A84B', fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: '14px' }}>
@@ -695,17 +702,34 @@ function DayBlock({ day, exercises, meals, onAddExercise, onUpdateExercise, onRe
       </p>
 
       {meals.map((row, idx) => (
-        <div key={idx} style={{ display: 'grid', gridTemplateColumns: '160px 1fr auto', gap: '6px', marginBottom: '6px', alignItems: 'center' }}>
+        <div key={idx} className="mealRow" style={{ display: 'grid', gridTemplateColumns: '160px 1fr auto', gap: '6px', marginBottom: '6px', alignItems: 'center' }}>
           <select style={inputStyle} value={row.meal_type} onChange={e => onUpdateMeal(idx, 'meal_type', e.target.value)}>
             {Object.entries(MEAL_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
           <input style={inputStyle} placeholder="ex: 3 œufs, avoine, banane..." value={row.content} onChange={e => onUpdateMeal(idx, 'content', e.target.value)} />
-          <button type="button" onClick={() => onRemoveMeal(idx)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}><X size={14} /></button>
+          <button type="button" onClick={() => onRemoveMeal(idx)} className="rowDeleteBtn" style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}><X size={14} /></button>
         </div>
       ))}
       <button type="button" onClick={onAddMeal} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', color: '#AAA', fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', padding: '4px 0' }}>
         <Plus size={12} /> Ligne repas
       </button>
+
+      <style jsx>{`
+        @media (max-width: 700px) {
+          .exerciseRow,
+          .mealRow {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+            padding: 10px;
+            background: #1A1A1A;
+            border-radius: 6px;
+            margin-bottom: 10px !important;
+          }
+          .rowDeleteBtn {
+            justify-self: flex-end;
+          }
+        }
+      `}</style>
     </div>
   )
 }

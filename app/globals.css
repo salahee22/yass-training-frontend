@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+
 :root {
   --gold: #C8A84B;
   --gold-light: #E8C86A;

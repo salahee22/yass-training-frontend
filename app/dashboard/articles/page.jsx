@@ -49,7 +49,7 @@ export default function DashboardArticles() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+      <div className="headerRow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
         <h1 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 900, fontSize: '28px', color: '#FFF' }}>
           Articles
         </h1>
@@ -70,13 +70,14 @@ export default function DashboardArticles() {
           {articles.map((article, i) => (
             <div
               key={article._id}
+              className="articleRow"
               style={{
                 display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px',
                 borderBottom: i < articles.length - 1 ? '1px solid #1E1E1E' : 'none',
               }}
             >
               <img src={article.image} alt={article.title} style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="articleInfo" style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 700, color: '#FFF', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {article.title}
                 </p>
@@ -84,23 +85,46 @@ export default function DashboardArticles() {
                   {article.category} {article.age ? `· ${article.age}` : ''}
                 </p>
               </div>
-              <Link
-                href={`/dashboard/articles/${article._id}/edit`}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#1E1E1E', color: '#FFF', fontFamily: 'Inter, sans-serif', fontSize: '12px', padding: '8px 14px', borderRadius: '6px', textDecoration: 'none' }}
-              >
-                <Pencil size={13} /> Éditer
-              </Link>
-              <button
-                onClick={() => handleDelete(article._id)}
-                disabled={deletingId === article._id}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(229,57,53,0.1)', color: '#E53935', fontFamily: 'Inter, sans-serif', fontSize: '12px', padding: '8px 14px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
-              >
-                <Trash2 size={13} /> {deletingId === article._id ? '...' : 'Suppr.'}
-              </button>
+              <div className="articleActions" style={{ display: 'flex', gap: '10px', flexShrink: 0 }}>
+                <Link
+                  href={`/dashboard/articles/${article._id}/edit`}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#1E1E1E', color: '#FFF', fontFamily: 'Inter, sans-serif', fontSize: '12px', padding: '8px 14px', borderRadius: '6px', textDecoration: 'none', whiteSpace: 'nowrap' }}
+                >
+                  <Pencil size={13} /> Éditer
+                </Link>
+                <button
+                  onClick={() => handleDelete(article._id)}
+                  disabled={deletingId === article._id}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(229,57,53,0.1)', color: '#E53935', fontFamily: 'Inter, sans-serif', fontSize: '12px', padding: '8px 14px', borderRadius: '6px', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  <Trash2 size={13} /> {deletingId === article._id ? '...' : 'Suppr.'}
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
+
+      <style jsx>{`
+        @media (max-width: 600px) {
+          .headerRow {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 16px;
+          }
+          .articleRow {
+            flex-wrap: wrap;
+          }
+          .articleInfo {
+            min-width: 140px !important;
+          }
+          .articleActions {
+            width: 100%;
+            justify-content: flex-end;
+            margin-top: 8px;
+          }
+        }
+      `}</style>
     </div>
   )
 }

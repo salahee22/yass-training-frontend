@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ChevronRight, ChevronDown } from 'lucide-react'
 
 export default function ArticlePage({ params }) {
   const { id } = use(params)
@@ -80,8 +80,6 @@ export default function ArticlePage({ params }) {
     )
   }
 
-  // Construit un objet "content" homogène, avec des valeurs par défaut
-  // si l'article n'a pas encore de contenu long structuré en base
   const content = {
     intro: article.intro?.paragraphs?.length
       ? article.intro
@@ -103,48 +101,50 @@ export default function ArticlePage({ params }) {
     <div style={{ background: '#FFFFFF', paddingTop: '68px', minHeight: '100vh' }}>
 
       {/* HERO IMAGE */}
-      <div style={{ position: 'relative', height: 'clamp(380px, 48vw, 520px)', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: 'clamp(280px, 48vw, 520px)', overflow: 'hidden' }}>
         <img src={article.image} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center center', display: 'block' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1))', pointerEvents: 'none' }} />
         <Link href="/football" style={{ position: 'absolute', top: '20px', left: '24px', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(0,0,0,0.5)', color: '#FFF', fontFamily: 'Syne, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '8px 14px', borderRadius: '20px', textDecoration: 'none', backdropFilter: 'blur(8px)' }}>
           <ArrowLeft size={13} /> Retour
         </Link>
       </div>
+
       {/* GALERIE PHOTOS */}
-{article.images?.length > 0 && (
-  <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px 0' }}>
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(article.images.length, 4)}, 1fr)`, gap: '12px' }}>
-      {article.images.map((img, i) => (
-        <div key={i} style={{ borderRadius: '8px', overflow: 'hidden', height: '140px' }}>
-          <img src={img} alt={`${article.title} ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      {article.images?.length > 0 && (
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px 0' }}>
+          <div className="galleryGrid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(article.images.length, 4)}, 1fr)`, gap: '12px' }}>
+            {article.images.map((img, i) => (
+              <div key={i} style={{ borderRadius: '8px', overflow: 'hidden', height: '140px' }}>
+                <img src={img} alt={`${article.title} ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
+      )}
+
+      {/* NAV SECTIONS — dropdown unique, plus de liste défilante */}
+<div style={{ borderBottom: '1px solid #E8E8E8', background: '#FAFAFA', position: 'sticky', top: '68px', zIndex: 100 }}>
+  <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '10px 24px' }}>
+    <div style={{ position: 'relative', maxWidth: '260px' }}>
+      <select
+        value={activeSection}
+        onChange={e => scrollToSection(Number(e.target.value))}
+        style={{
+          width: '100%', appearance: 'none', WebkitAppearance: 'none',
+          background: '#FFF', border: '1px solid #DDD', borderRadius: '8px',
+          padding: '10px 36px 10px 14px', fontFamily: 'Inter, sans-serif',
+          fontSize: '13px', fontWeight: 600, color: '#111', outline: 'none',
+          cursor: 'pointer',
+        }}
+      >
+        {sections.map((s, i) => (
+          <option key={i} value={i}>{s}</option>
+        ))}
+      </select>
+      <ChevronDown size={16} color="#888" style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
     </div>
   </div>
-)}
-
-      {/* NAV SECTIONS */}
-      <div style={{ borderBottom: '1px solid #E8E8E8', background: '#FAFAFA', position: 'sticky', top: '68px', zIndex: 100 }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 24px', display: 'flex' }}>
-          {sections.map((s, i) => (
-            <button
-              key={i}
-              onClick={() => scrollToSection(i)}
-              style={{
-                fontFamily: 'Inter, sans-serif', fontSize: '13px',
-                fontWeight: activeSection === i ? 600 : 400,
-                color: activeSection === i ? '#111' : '#888',
-                background: 'none', border: 'none', cursor: 'pointer',
-                padding: '14px 20px',
-                borderBottom: activeSection === i ? '2px solid #111' : '2px solid transparent',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      </div>
+</div>
 
       {/* TITLE + INTRO */}
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px 0' }}>
@@ -167,10 +167,10 @@ export default function ArticlePage({ params }) {
       </div>
 
       {/* MAIN CONTENT */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px 48px', display: 'grid', gridTemplateColumns: '1fr 280px', gap: '60px', alignItems: 'stretch' }}>
+      <div className="mainGrid" style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px 48px', display: 'grid', gridTemplateColumns: '1fr 280px', gap: '60px', alignItems: 'stretch' }}>
 
         {/* LEFT */}
-        <div>
+        <div style={{ minWidth: 0 }}>
           {content.chapters.map((ch, i) => (
             <div id={`section-${i + 1}`} key={i} style={{ marginBottom: '56px' }}>
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -181,16 +181,17 @@ export default function ArticlePage({ params }) {
                 {ch.theme}
                 <span style={{ flex: 1, height: '1px', background: '#E8E8E8' }} />
               </span>
-              <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '26px', fontWeight: 900, fontStyle: 'italic', color: '#0A0A0A', marginBottom: '20px', lineHeight: '1.2' }}>
+              <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 900, fontStyle: 'italic', color: '#0A0A0A', marginBottom: '20px', lineHeight: '1.2' }}>
                 {ch.title}
               </h2>
 
               {i === 0 && ch.image ? (
                 <>
-                  <div style={{ overflow: 'hidden' }}>
+                  <div className="floatImgWrap" style={{ overflow: 'hidden' }}>
                     <img
                       src={ch.image}
                       alt={ch.title}
+                      className="floatImg"
                       style={{
                         float: 'right',
                         width: '260px',
@@ -219,11 +220,11 @@ export default function ArticlePage({ params }) {
               )}
 
               {i !== 0 && ch.image && (
-                <div style={{ margin: '28px 0', borderRadius: '8px', overflow: 'hidden', background: '#F5F5F5', minHeight: '320px' }}>
+                <div style={{ margin: '28px 0', borderRadius: '8px', overflow: 'hidden', background: '#F5F5F5', minHeight: '200px' }}>
                   <img
                     src={ch.image}
                     alt={ch.title}
-                    style={{ width: '100%', height: '320px', objectFit: 'cover', display: 'block', objectPosition: 'center' }}
+                    style={{ width: '100%', height: 'clamp(200px, 40vw, 320px)', objectFit: 'cover', display: 'block', objectPosition: 'center' }}
                   />
                 </div>
               )}
@@ -245,7 +246,7 @@ export default function ArticlePage({ params }) {
                 {content.conclusion.theme}
                 <span style={{ flex: 1, height: '1px', background: '#E8E8E8' }} />
               </span>
-              <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '26px', fontWeight: 900, fontStyle: 'italic', color: '#0A0A0A', marginBottom: '20px' }}>
+              <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 900, fontStyle: 'italic', color: '#0A0A0A', marginBottom: '20px' }}>
                 {content.conclusion.title}
               </h2>
               {content.conclusion.paragraph?.map((p, i) => (
@@ -258,7 +259,6 @@ export default function ArticlePage({ params }) {
         {/* RIGHT SIDEBAR */}
         <div style={{ position: 'relative', alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: '28px', minHeight: '100%', paddingTop: '22px' }}>
 
-          {/* PARCOURS */}
           {content.sidebar.parcours && (
             <div style={{ paddingBottom: '32px', borderBottom: '1px solid #E8E8E8' }}>
               <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#111', marginBottom: '20px' }}>
@@ -273,7 +273,6 @@ export default function ArticlePage({ params }) {
             </div>
           )}
 
-          {/* Expert card */}
           {content.sidebar.expert && (
             <div style={{ background: '#0A0A0A', padding: '24px', borderRadius: '4px' }}>
               <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: 900, fontStyle: 'italic', color: '#FFFFFF', marginBottom: '12px', lineHeight: '1.3' }}>
@@ -285,7 +284,6 @@ export default function ArticlePage({ params }) {
             </div>
           )}
 
-          {/* Chiffres clés */}
           {content.sidebar.expert?.keyFigures?.length > 0 && (
             <div style={{ paddingBottom: '24px', borderBottom: '1px solid #E8E8E8' }}>
               <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#111', marginBottom: '16px' }}>
@@ -304,7 +302,6 @@ export default function ArticlePage({ params }) {
 
           <div style={{ flex: 1 }} />
 
-          {/* AUTRES CONTENUS */}
           {otherArticles.length > 0 && (
             <div>
               <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: '17px', fontWeight: 800, fontStyle: 'italic', color: '#0A0A0A', marginBottom: '10px' }}>
@@ -321,7 +318,6 @@ export default function ArticlePage({ params }) {
             </div>
           )}
 
-          {/* CTA Elite */}
           <Link
             href="/elite"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#C8A84B', padding: '16px 20px', borderRadius: '4px', textDecoration: 'none', transition: 'background 0.2s ease' }}
@@ -336,6 +332,29 @@ export default function ArticlePage({ params }) {
           </Link>
         </div>
       </div>
+
+      <style jsx>{`
+        
+        @media (max-width: 900px) {
+          .mainGrid {
+            grid-template-columns: 1fr !important;
+            gap: 40px !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .galleryGrid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .floatImg {
+            float: none !important;
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 16 / 10;
+            margin: 0 0 16px 0 !important;
+          }
+          
+        }
+      `}</style>
     </div>
   )
 }

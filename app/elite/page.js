@@ -113,7 +113,7 @@ window.location.href = json.data.checkout_url
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(https://res.cloudinary.com/imsyp8wq/image/upload/v1783517999/cycle_zz5qc2.jpg)', backgroundSize: 'cover', backgroundPosition: '82% 5%', backgroundRepeat: 'no-repeat', transform: 'scaleX(-1)', pointerEvents:'none' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.93) 0%, rgba(0,0,0,0.65) 60%, rgba(30,20,0,0.4) 100%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', maxWidth: '1280px', margin: '0 auto', padding: '0 24px', width: '100%' }}>
-          <h1 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 900, fontSize: 'clamp(50px, 10vw, 100px)', lineHeight: '1', color: '#FFFFFF', marginBottom: '24px' }}>
+          <h1 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 900, fontSize: 'clamp(40px, 10vw, 100px)', lineHeight: '1', color: '#FFFFFF', marginBottom: '24px' }}>
            Programme<br /><span style={{ color: '#C8A84B' }}>ELITE</span>
          </h1>
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '18px', lineHeight: '1.7', color: 'rgba(255,255,255,0.6)', maxWidth: '520px', marginBottom: '40px' }}>
@@ -137,7 +137,7 @@ window.location.href = json.data.checkout_url
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 24px 60px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '40px', flexWrap: 'wrap' }}>
           <div style={{ maxWidth: '480px' }}>
             <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: 600, fontStyle: 'italic', color: 'rgba(255,255,255,0.5)', display: 'flex', marginBottom: '16px', marginTop: '-8px', paddingLeft: '7px' }}>Pourquoi Nous</span>
-            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, fontStyle: 'italic', color: '#FFFFFF', lineHeight: '1.1', textTransform: 'uppercase', marginBottom: '0' }}>
+            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, fontStyle: 'italic', color: '#FFFFFF', lineHeight: '1.1', textTransform: 'uppercase', marginBottom: '0' }}>
               L'EXCELLENCE COMME<br />
               <span style={{ color: '#C8A84B' }}>STANDARD.</span>
             </h2>
@@ -149,7 +149,7 @@ window.location.href = json.data.checkout_url
           </div>
         </div>
 
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px 80px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0' }}>
+        <div className="whyUsGrid" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px 80px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0' }}>
           {[
             {
               title: 'Individualisation',
@@ -169,6 +169,7 @@ window.location.href = json.data.checkout_url
           ].map((item, i) => (
             <div
               key={i}
+              className="whyUsItem"
               style={{
                 padding: '48px 36px',
                 borderWidth: '1px',
@@ -220,7 +221,7 @@ window.location.href = json.data.checkout_url
         <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '40px', flexWrap: 'wrap', paddingBottom: '48px', borderBottom: '1px solid #E0E0E0' }}>
           <div>
             <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: 600, color: '#333', fontStyle: 'italic', display: 'flex', marginBottom: '16px', marginTop: '-8px', paddingLeft: '7px' }}>Nos coachs</span>
-            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, fontStyle: 'italic', color: '#111', lineHeight: '1.1', textTransform: 'uppercase' }}>
+            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, fontStyle: 'italic', color: '#111', lineHeight: '1.1', textTransform: 'uppercase' }}>
               DES ENTRAÎNEURS QUALIFIÉS<br />
               <span style={{ color: '#C8A84B' }}>FORMÉS et Certifiés.</span>
             </h2>
@@ -237,7 +238,7 @@ window.location.href = json.data.checkout_url
       <section style={{ background: '#F5F5F5', padding: '0 24px 80px' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           {coaches.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', paddingTop: '48px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '20px', paddingTop: '48px' }}>
               {coaches.map(coach => (
                 <CoachCardLight key={coach._id} coach={coach} />
               ))}
@@ -259,7 +260,7 @@ window.location.href = json.data.checkout_url
               choisissez le pack qui correspond à vos ambitions.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '24px', alignItems: 'start' }}>
             {offers.map(offer => (
               <OfferCard
                 key={offer.id}
@@ -276,7 +277,7 @@ window.location.href = json.data.checkout_url
       <section id="inscription" style={{ background: '#F5F5F5', padding: '60px 0 100px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px' }}>
           <div style={{ marginBottom: '40px', textAlign: 'center' }}>
-            <h2 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 800, fontSize: 'clamp(26px, 4vw, 36px)', color: '#111111' }}>
+            <h2 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 800, fontSize: 'clamp(24px, 4vw, 36px)', color: '#111111' }}>
               Informations personnelles
             </h2>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontStyle: 'italic', color: '#777', marginTop: '10px' }}>
@@ -297,7 +298,7 @@ window.location.href = json.data.checkout_url
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <div style={{ background: '#EDEDED', borderRadius: '16px', padding: '40px' }}>
+              <div style={{ background: '#EDEDED', borderRadius: '16px', padding: '32px 24px' }}>
 
                 {error && (
                   <p style={{ background: 'rgba(229,57,53,0.15)', color: '#E53935', fontSize: '13px', padding: '12px 16px', borderRadius: '8px', marginBottom: '20px', fontFamily: 'Inter, sans-serif' }}>
@@ -305,7 +306,7 @@ window.location.href = json.data.checkout_url
                   </p>
                 )}
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '20px', marginBottom: '20px' }}>
                   {[
                     { name: 'nom', label: 'Nom', type: 'text', required: true },
                     { name: 'prenom', label: 'Prenom', type: 'text', required: true },
@@ -386,6 +387,19 @@ window.location.href = json.data.checkout_url
           )}
         </div>
       </section>
+
+      <style jsx global>{`
+        @media (max-width: 700px) {
+          .whyUsGrid {
+            grid-template-columns: 1fr !important;
+          }
+          .whyUsItem {
+            border-left-width: 1px !important;
+            border-left-style: solid !important;
+            border-left-color: #1E1E1E !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

@@ -11,10 +11,16 @@ export default function DashboardPlayers() {
     async function fetchPlayers() {
       try {
         const token = localStorage.getItem('admin_token')
+        console.log('TOKEN:', token)
+
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users?role=player`, {
           headers: { Authorization: `Bearer ${token}` },
         })
+        console.log('STATUS:', res.status)
+
         const json = await res.json()
+        console.log('JSON:', json)
+
         setPlayers(json.data || [])
       } catch (err) {
         console.error(err)
