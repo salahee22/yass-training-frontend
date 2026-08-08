@@ -67,6 +67,16 @@ function ProgramView({ program }) {
   const [togglingId, setTogglingId] = useState(null)
   const [collapsedWeeks, setCollapsedWeeks] = useState(new Set())
   const [feedbackModal, setFeedbackModal] = useState(null)
+  const [collapsedDays, setCollapsedDays] = useState(new Set())
+
+  function toggleDay(week, day) {
+    const key = `${week}-${day}`
+    setCollapsedDays(prev => {
+      const next = new Set(prev)
+      next.has(key) ? next.delete(key) : next.add(key)
+      return next
+    })
+  }
 
   useEffect(() => {
     fetchAll()
@@ -183,6 +193,7 @@ function ProgramView({ program }) {
         </div>
         {entries.length > 0 && (
           <div style={{ textAlign: 'right' }}>
+            {/* Reste en jaune : seule touche de couleur de la page */}
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '20px', fontWeight: 900, color: '#C8A84B' }}>{progressPct}%</p>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#666' }}>{completedCount}/{entries.length} complétés</p>
           </div>
@@ -191,6 +202,7 @@ function ProgramView({ program }) {
 
       {entries.length > 0 && (
         <div style={{ height: '6px', background: '#1E1E1E', borderRadius: '3px', overflow: 'hidden', marginBottom: '24px' }}>
+          {/* Jauge : reste en jaune */}
           <div style={{ height: '100%', width: `${progressPct}%`, background: '#C8A84B', transition: 'width 0.3s ease' }} />
         </div>
       )}
@@ -215,7 +227,7 @@ function ProgramView({ program }) {
                 onClick={() => toggleWeek(week)}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: isCollapsed ? 0 : '16px' }}
               >
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#C8A84B', fontWeight: 700 }}>Semaine {week}</p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#FFF', fontWeight: 700 }}>Semaine {week}</p>
                 <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#888' }}>
                   {isCollapsed ? 'Afficher ▾' : 'Cacher ▴'}
                 </span>
@@ -226,96 +238,108 @@ function ProgramView({ program }) {
                 const dayExercises = weekExerciseDays[day] || []
                 const dayMeals = weekMealDays[day] || []
                 const allComplete = dayExercises.length > 0 && dayExercises.every(e => e.complete)
+                const dayKey = `${week}-${day}`
+                const isDayCollapsed = collapsedDays.has(dayKey)
 
                 return (
                   <div key={day} style={{ marginBottom: '18px' }}>
-                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#C8A84B', marginBottom: '8px', fontWeight: 700 }}>
-                      Jour {day} {isRestDay && <span style={{ color: '#888', fontStyle: 'italic', fontWeight: 400 }}>· Repos</span>}
-                    </p>
-
-                    {isRestDay ? (
-                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
-                        Jour de repos programmé.
+                    <button
+                      onClick={() => toggleDay(week, day)}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: isDayCollapsed ? 0 : '8px' }}
+                    >
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#FFF', fontWeight: 700, margin: 0 }}>
+                        Jour {day} {isRestDay && <span style={{ color: '#888', fontStyle: 'italic', fontWeight: 400 }}>· Repos</span>}
                       </p>
-                    ) : (
-                      <>
-                        {dayExercises.length > 0 && (
-                          <>
-                            <p style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#888', marginBottom: '6px' }}>
-                              <Dumbbell size={11} /> Exercices
-                            </p>
-                            {dayExercises.map(entry => (
-                              <button
-                                key={entry._id}
-                                onClick={() => handleToggle(entry)}
-                                disabled={togglingId === entry._id}
-                                style={{
-                                  display: 'flex', alignItems: 'center', gap: '12px', width: '100%',
-                                  background: entry.complete ? '#1E1E1E' : '#1A1A1A',
-                                  border: `1px solid ${entry.complete ? '#3A3A3A' : '#262626'}`,
-                                  borderRadius: '8px', padding: '12px 14px', marginBottom: '6px',
-                                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s ease',
-                                }}
-                              >
-                                <div style={{
-                                  width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
-                                  border: `2px solid ${entry.complete ? '#C8A84B' : '#444'}`,
-                                  background: entry.complete ? '#C8A84B' : 'transparent',
-                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                }}>
-                                  {entry.complete && <Check size={12} color="#000" />}
-                                </div>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: entry.complete ? '#C8A84B' : '#FFF' }}>
-                                    {entry.name}
-                                  </p>
-                                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#666' }}>
-                                    {[
-                                      entry.sets ? `${entry.sets} séries` : null,
-                                      entry.reps ? `${entry.reps} reps` : null,
-                                      entry.rest ? `repos ${entry.rest}` : null,
-                                    ].filter(Boolean).join(' · ')}
-                                  </p>
-                                  {entry.notes && <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#555', marginTop: '2px' }}>{entry.notes}</p>}
-                                </div>
-                              </button>
-                            ))}
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#888' }}>
+                        {isDayCollapsed ? 'Afficher ▾' : 'Cacher ▴'}
+                      </span>
+                    </button>
 
-                            {allComplete ? (
-                              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#C8A84B', fontWeight: 700, marginTop: '4px', marginBottom: '10px' }}>
-                                ✓ Journée terminée
+                    {!isDayCollapsed && (
+                      isRestDay ? (
+                        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
+                          Jour de repos programmé.
+                        </p>
+                      ) : (
+                        <>
+                          {dayExercises.length > 0 && (
+                            <>
+                              <p style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#888', marginBottom: '6px' }}>
+                                <Dumbbell size={11} /> Exercices
                               </p>
-                            ) : (
-                              <button
-                                onClick={() => handleFinishDay(week, day, dayExercises)}
-                                style={{ background: '#1E1E1E', color: '#C8A84B', fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 700, padding: '8px 14px', borderRadius: '6px', border: '1px solid #262626', cursor: 'pointer', marginTop: '6px', marginBottom: '10px' }}
-                              >
-                                Marquer la journée comme terminée
-                              </button>
-                            )}
-                          </>
-                        )}
+                              {dayExercises.map(entry => (
+                                <button
+                                  key={entry._id}
+                                  onClick={() => handleToggle(entry)}
+                                  disabled={togglingId === entry._id}
+                                  style={{
+                                    display: 'flex', alignItems: 'center', gap: '12px', width: '100%',
+                                    background: entry.complete ? '#1E1E1E' : '#1A1A1A',
+                                    border: `1px solid ${entry.complete ? '#3A3A3A' : '#262626'}`,
+                                    borderRadius: '8px', padding: '12px 14px', marginBottom: '6px',
+                                    cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s ease',
+                                  }}
+                                >
+                                  <div style={{
+                                    width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+                                    border: `2px solid ${entry.complete ? '#666' : '#444'}`,
+                                    background: entry.complete ? '#3A3A3A' : 'transparent',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  }}>
+                                    {entry.complete && <Check size={12} color="#FFF" />}
+                                  </div>
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: entry.complete ? '#888' : '#FFF' }}>
+                                      {entry.name}
+                                    </p>
+                                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#666' }}>
+                                      {[
+                                        entry.sets ? `${entry.sets} séries` : null,
+                                        entry.reps ? `${entry.reps} reps` : null,
+                                        entry.rest ? `repos ${entry.rest}` : null,
+                                      ].filter(Boolean).join(' · ')}
+                                    </p>
+                                    {entry.notes && <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#555', marginTop: '2px' }}>{entry.notes}</p>}
+                                  </div>
+                                </button>
+                              ))}
 
-                        {dayMeals.length > 0 && (
-                          <>
-                            <p style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#888', marginBottom: '6px', marginTop: '10px' }}>
-                              <Apple size={11} /> Nutrition
-                            </p>
-                            {dayMeals.map(entry => (
-                              <div key={entry._id} style={{ background: '#1A1A1A', border: '1px solid #262626', borderRadius: '8px', padding: '10px 14px', marginBottom: '6px' }}>
-                                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#AAA', fontWeight: 600, marginBottom: '2px' }}>
-                                  {MEAL_LABELS[entry.meal_type]}
+                              {allComplete ? (
+                                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#FFF', fontWeight: 700, marginTop: '4px', marginBottom: '10px' }}>
+                                  ✓ Journée terminée
                                 </p>
-                                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#FFF' }}>{entry.content}</p>
-                              </div>
-                            ))}
-                          </>
-                        )}
+                              ) : (
+                                <button
+                                  onClick={() => handleFinishDay(week, day, dayExercises)}
+                                  style={{ background: '#1E1E1E', color: '#FFF', fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 700, padding: '8px 14px', borderRadius: '6px', border: '1px solid #262626', cursor: 'pointer', marginTop: '6px', marginBottom: '10px' }}
+                                >
+                                  Marquer la journée comme terminée
+                                </button>
+                              )}
+                            </>
+                          )}
 
-                        {dayExercises.length === 0 && dayMeals.length === 0 && (
-                          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#555' }}>Rien ce jour-là.</p>
-                        )}
-                      </>
+                          {dayMeals.length > 0 && (
+                            <>
+                              <p style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#888', marginBottom: '6px', marginTop: '10px' }}>
+                                <Apple size={11} /> Nutrition
+                              </p>
+                              {dayMeals.map(entry => (
+                                <div key={entry._id} style={{ background: '#1A1A1A', border: '1px solid #262626', borderRadius: '8px', padding: '10px 14px', marginBottom: '6px' }}>
+                                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#AAA', fontWeight: 600, marginBottom: '2px' }}>
+                                    {MEAL_LABELS[entry.meal_type]}
+                                  </p>
+                                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#FFF' }}>{entry.content}</p>
+                                </div>
+                              ))}
+                            </>
+                          )}
+
+                          {dayExercises.length === 0 && dayMeals.length === 0 && (
+                            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#555' }}>Rien ce jour-là.</p>
+                          )}
+                        </>
+                      )
                     )}
                   </div>
                 )

@@ -414,13 +414,10 @@ function ExerciseCard({ exercise }) {
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)', pointerEvents: 'none' }} />
         </div>
         <div style={{ padding: '20px', flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-            <span style={{ fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#FFFFFF' }}>{exercise.theme}</span>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#777' }}>{exercise.age}</span>
-          </div>
+          <span style={{ fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999999', display: 'block', marginBottom: '10px' }}>{exercise.theme}</span>
           <h3 style={{ fontFamily: 'Syne, sans-serif', fontSize: '15px', fontWeight: 700, color: '#FFFFFF', lineHeight: '1.4', marginBottom: '10px' }}>{exercise.name}</h3>
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', lineHeight: '1.6', color: '#999', marginBottom: '16px' }}>{exercise.description?.slice(0, 90)}...</p>
-          <span style={{ fontFamily: 'Syne, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#FFFFFF' }}>Voir l'entraînement</span>
+          <span style={{ fontFamily: 'Syne, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#FFFFFF', marginTop: 'auto' }}>Voir l'entraînement</span>
         </div>
       </div>
     </Link>

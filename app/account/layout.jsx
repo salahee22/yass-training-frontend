@@ -67,8 +67,9 @@ export default function AccountLayout({ children }) {
     { href: '/account/programme', label: 'Mon programme', icon: Dumbbell },
     { href: '/account/performance', label: 'Mes performances', icon: TrendingUp },
     { href: '/account/messages', label: 'Messages', icon: MessageCircle },
-    { href: '/account/settings', label: 'Paramètres', icon: Settings },
+    
     { href: '/account/bookings', label: 'Coaching présentiel', icon: Calendar },
+    { href: '/account/settings', label: 'Paramètres', icon: Settings },
   ]
 
   const canContactWhatsApp = subscription && subscription.plan_name === 'elite'

@@ -16,7 +16,7 @@ const PLAN_LABELS = { basic: 'Basic (Elite 1)', premium: 'Premium (Elite 2)', el
 const PLAN_PRICES = { basic: 4500, premium: 8500, elite: 14000 }
 
 const FEELING_LABELS = { fatigue: 'Fatigué', moyen: 'Moyen', en_forme: 'En forme' }
-const FEELING_COLORS = { fatigue: '#E53935', moyen: '#C8A84B', en_forme: '#4CAF50' }
+const FEELING_COLORS = { fatigue: '#E53935', moyen: '#FFF', en_forme: '#4CAF50' }
 const LOAD_LABELS = { baisser: '↓ Baisser la charge', garder: '= Garder pareil', augmenter: '↑ Augmenter la charge' }
 
 const inputStyle = { background: '#1E1E1E', border: '1px solid #2A2A2A', borderRadius: '6px', padding: '8px 10px', color: '#FFF', fontFamily: 'Inter, sans-serif', fontSize: '12px', outline: 'none', width: '100%' }
@@ -100,6 +100,63 @@ export default function PlayerDetailPage({ params }) {
   if (loading) return <p style={{ color: '#888', fontFamily: 'Inter, sans-serif' }}>Chargement...</p>
   if (!player) return <p style={{ color: '#888', fontFamily: 'Inter, sans-serif' }}>Joueur introuvable.</p>
 
+  function PerformanceSection({ playerId }) {
+  const [records, setRecords] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => { fetchRecords() }, [playerId])
+
+  async function fetchRecords() {
+    setLoading(true)
+    try {
+      const token = localStorage.getItem('admin_token')
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/performance-records?player_id=${playerId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const json = await res.json()
+      setRecords(json.data || [])
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={{ background: '#141414', border: '1px solid #1E1E1E', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
+      <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '12px', fontWeight: 700, color: '#FFF', marginBottom: '12px' }}>
+        Performances
+      </p>
+
+      {loading ? (
+        <p style={{ color: '#666', fontFamily: 'Inter, sans-serif', fontSize: '12px' }}>Chargement...</p>
+      ) : records.length === 0 ? (
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#888' }}>Aucune performance enregistrée.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {records.map(rec => (
+            <div key={rec._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#1A1A1A', border: '1px solid #262626', borderRadius: '8px', padding: '10px 14px' }}>
+              <div>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#FFF', fontWeight: 600 }}>
+                  {rec.label}
+                </p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#666' }}>
+                  {new Date(rec.recorded_at).toLocaleDateString('fr-FR')}
+                </p>
+              </div>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#C8A84B', fontWeight: 700 }}>
+                {rec.value}{rec.unit ? ` ${rec.unit}` : ''}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+
+
   return (
     <div>
       <h1 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 900, fontSize: '28px', color: '#FFF', marginBottom: '4px' }}>
@@ -117,6 +174,10 @@ export default function PlayerDetailPage({ params }) {
       {!profil?.phone && !profil?.position && <div style={{ marginBottom: '24px' }} />}
 
       <SubscriptionSection playerId={id} />
+      <PerformanceSection playerId={id} />
+
+      
+         
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
         <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '13px', fontWeight: 700, color: '#FFF' }}>Programmes</p>
@@ -226,7 +287,7 @@ function SubscriptionSection({ playerId }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
         <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '12px', fontWeight: 700, color: '#FFF' }}>Abonnement</p>
         {!showForm && (
-          <button onClick={() => setShowForm(true)} style={{ background: '#C8A84B', color: '#000', fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '12px', padding: '7px 12px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}>
+          <button onClick={() => setShowForm(true)} style={btnGold}>
             {subscription ? 'Renouveler' : 'Créer un abonnement'}
           </button>
         )}
@@ -249,10 +310,10 @@ function SubscriptionSection({ playerId }) {
           </select>
           <input type="number" min="1" style={{ ...selectStyle, width: '70px' }} value={months} onChange={e => setMonths(e.target.value)} />
           <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#666' }}>mois</span>
-          <button type="submit" disabled={saving} style={{ background: '#C8A84B', color: '#000', fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '12px', padding: '7px 12px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}>
+          <button type="submit" disabled={saving} style={btnGold}>
             {saving ? '...' : 'Valider'}
           </button>
-          <button type="button" onClick={() => setShowForm(false)} style={{ background: 'none', color: '#888', fontFamily: 'Inter, sans-serif', fontSize: '12px', padding: '7px 12px', borderRadius: '6px', border: '1px solid #262626', cursor: 'pointer' }}>
+          <button type="button" onClick={() => setShowForm(false)} style={btnOutline}>
             Annuler
           </button>
         </form>
@@ -290,30 +351,30 @@ function ProgramCard({ program }) {
     }
   }
 
- async function toggleRestDay(day) {
-  const updated = restDays.includes(day) ? restDays.filter(d => d !== day) : [...restDays, day]
-  const previous = restDays
-  setRestDays(updated)
-  setSavingRest(true)
-  try {
-    const token = localStorage.getItem('admin_token')
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/programmes/${program._id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ rest_days: updated }),
-    })
-    if (!res.ok) {
-      const json = await res.json().catch(() => ({}))
-      setRestDays(previous) // rollback si échec
-      alert(json.message || 'Erreur lors de la sauvegarde des jours de repos')
+  async function toggleRestDay(day) {
+    const updated = restDays.includes(day) ? restDays.filter(d => d !== day) : [...restDays, day]
+    const previous = restDays
+    setRestDays(updated)
+    setSavingRest(true)
+    try {
+      const token = localStorage.getItem('admin_token')
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/programmes/${program._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ rest_days: updated }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        setRestDays(previous)
+        alert(json.message || 'Erreur lors de la sauvegarde des jours de repos')
+      }
+    } catch (err) {
+      setRestDays(previous)
+      alert('Erreur réseau')
+    } finally {
+      setSavingRest(false)
     }
-  } catch (err) {
-    setRestDays(previous)
-    alert('Erreur réseau')
-  } finally {
-    setSavingRest(false)
   }
-}
 
   async function handleRemoveExercice(entryId) {
     if (!confirm('Retirer cet exercice du programme ?')) return
@@ -453,7 +514,7 @@ function FeedbackList({ programId }) {
                 {FEELING_LABELS[fb.feeling]}
               </span>
             </div>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#C8A84B', marginBottom: fb.comment ? '4px' : 0 }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#FFF', marginBottom: fb.comment ? '4px' : 0 }}>
               {LOAD_LABELS[fb.load_preference]}
             </p>
             {fb.comment && (
@@ -478,7 +539,16 @@ function FeedbackList({ programId }) {
 
 function WeekSummary({ week, exercises, meals, onRemoveExercice, onRemoveMeal }) {
   const [collapsed, setCollapsed] = useState(false)
+  const [collapsedDays, setCollapsedDays] = useState(new Set())
   const days = Array.from(new Set([...exercises.map(e => e.day_num), ...meals.map(e => e.day_num)])).sort((a, b) => a - b)
+
+  function toggleDay(day) {
+    setCollapsedDays(prev => {
+      const next = new Set(prev)
+      next.has(day) ? next.delete(day) : next.add(day)
+      return next
+    })
+  }
 
   return (
     <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: '8px', padding: '16px' }}>
@@ -486,7 +556,7 @@ function WeekSummary({ week, exercises, meals, onRemoveExercice, onRemoveMeal })
         onClick={() => setCollapsed(c => !c)}
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', marginBottom: collapsed ? 0 : '12px' }}
       >
-        <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em', color: '#C8A84B' }}>
+        <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em', color: '#FFF' }}>
           Semaine {week}
         </p>
         <span style={{ color: '#888', fontSize: '11px', fontFamily: 'Inter, sans-serif' }}>{collapsed ? 'Afficher ▾' : 'Cacher ▴'}</span>
@@ -495,39 +565,53 @@ function WeekSummary({ week, exercises, meals, onRemoveExercice, onRemoveMeal })
       {!collapsed && days.map(day => {
         const dayExercises = exercises.filter(e => e.day_num === day)
         const dayMeals = meals.filter(e => e.day_num === day)
+        const isDayCollapsed = collapsedDays.has(day)
+
         return (
           <div key={day} style={{ marginBottom: '14px' }}>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#AAA', fontWeight: 700, marginBottom: '6px' }}>Jour {day}</p>
+            <button
+              onClick={() => toggleDay(day)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: isDayCollapsed ? 0 : '6px' }}
+            >
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#FFF', fontWeight: 700, margin: 0 }}>Jour {day}</p>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#888' }}>
+                {isDayCollapsed ? 'Afficher ▾' : 'Cacher ▴'}
+              </span>
+            </button>
 
-            {dayExercises.map(entry => (
-              <div key={entry._id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '6px 0', borderBottom: '1px solid #222' }}>
-                <Dumbbell size={13} color="#C8A84B" style={{ marginTop: '2px', flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#FFF', fontWeight: 600 }}>
-                    {entry.name} {entry.complete && <Check size={12} color="#EEE" style={{ marginLeft: '4px', verticalAlign: 'middle' }} />}
-                  </p>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#888' }}>
-                    {[entry.sets ? `${entry.sets} séries` : null, entry.reps ? `${entry.reps} reps` : null, entry.rest ? `repos ${entry.rest}` : null].filter(Boolean).join(' · ')}
-                  </p>
-                  {entry.notes && <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#666' }}>{entry.notes}</p>}
-                </div>
-                <button onClick={() => onRemoveExercice(entry._id)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', flexShrink: 0 }}><Trash2 size={12} /></button>
-              </div>
-            ))}
+            {!isDayCollapsed && (
+              <>
+                {dayExercises.map(entry => (
+                  <div key={entry._id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '6px 0', borderBottom: '1px solid #222' }}>
+                    <Dumbbell size={13} color="#FFF" style={{ marginTop: '2px', flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#FFF', fontWeight: 600 }}>
+                        {entry.name} {entry.complete && <Check size={12} color="#EEE" style={{ marginLeft: '4px', verticalAlign: 'middle' }} />}
+                      </p>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#888' }}>
+                        {[entry.sets ? `${entry.sets} séries` : null, entry.reps ? `${entry.reps} reps` : null, entry.rest ? `repos ${entry.rest}` : null].filter(Boolean).join(' · ')}
+                      </p>
+                      {entry.notes && <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#666' }}>{entry.notes}</p>}
+                    </div>
+                    <button onClick={() => onRemoveExercice(entry._id)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', flexShrink: 0 }}><Trash2 size={12} /></button>
+                  </div>
+                ))}
 
-            {dayMeals.map(entry => (
-              <div key={entry._id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '6px 0', borderBottom: '1px solid #222' }}>
-                <Apple size={13} color="#AAA" style={{ marginTop: '2px', flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#AAA', fontWeight: 600 }}>{MEAL_LABELS[entry.meal_type]}</p>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#FFF' }}>{entry.content}</p>
-                </div>
-                <button onClick={() => onRemoveMeal(entry._id)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', flexShrink: 0 }}><Trash2 size={12} /></button>
-              </div>
-            ))}
+                {dayMeals.map(entry => (
+                  <div key={entry._id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '6px 0', borderBottom: '1px solid #222' }}>
+                    <Apple size={13} color="#AAA" style={{ marginTop: '2px', flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#AAA', fontWeight: 600 }}>{MEAL_LABELS[entry.meal_type]}</p>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#FFF' }}>{entry.content}</p>
+                    </div>
+                    <button onClick={() => onRemoveMeal(entry._id)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', flexShrink: 0 }}><Trash2 size={12} /></button>
+                  </div>
+                ))}
 
-            {dayExercises.length === 0 && dayMeals.length === 0 && (
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#555' }}>Rien ce jour-là.</p>
+                {dayExercises.length === 0 && dayMeals.length === 0 && (
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#555' }}>Rien ce jour-là.</p>
+                )}
+              </>
             )}
           </div>
         )
@@ -679,7 +763,7 @@ function DayBlock({ day, exercises, meals, onAddExercise, onUpdateExercise, onRe
     <div style={{ background: '#141414', border: '1px solid #1E1E1E', borderRadius: '8px', padding: '14px' }}>
       <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 700, color: '#FFF', marginBottom: '12px' }}>Jour {day}</p>
 
-      <p style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#C8A84B', marginBottom: '8px' }}>
+      <p style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#FFF', marginBottom: '8px' }}>
         <Dumbbell size={12} /> Exercices
       </p>
 
@@ -693,7 +777,7 @@ function DayBlock({ day, exercises, meals, onAddExercise, onUpdateExercise, onRe
           <button type="button" onClick={() => onRemoveExercise(idx)} className="rowDeleteBtn" style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}><X size={14} /></button>
         </div>
       ))}
-      <button type="button" onClick={onAddExercise} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', color: '#C8A84B', fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: '14px' }}>
+      <button type="button" onClick={onAddExercise} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', color: '#FFF', fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: '14px' }}>
         <Plus size={12} /> Ligne exercice
       </button>
 

@@ -66,7 +66,7 @@ export default function FootballPage() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 100%)' }} />
         <div className="heroContent" style={{ position: 'relative', maxWidth: '1280px', margin: '0 auto', padding: '0 24px', width: '100%' }}>
           <h1 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 900, fontSize: 'clamp(34px, 8vw, 90px)', lineHeight: '1.0', color: '#FFFFFF', marginBottom: '20px', wordBreak: 'break-word' }}>
-            Football<br /><span style={{ color: '#C8A84B' }}>Articles</span>
+            Football<br /><span>Articles</span>
           </h1>
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '17px', lineHeight: '1.65', color: 'rgba(255,255,255,0.6)', maxWidth: '500px', marginBottom: '32px' }}>
             Développez votre passion, améliorez votre niveau. Des articles rédigés par des entraîneurs certifiés.

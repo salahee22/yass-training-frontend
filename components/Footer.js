@@ -5,6 +5,31 @@ import { Mail, Phone, MapPin } from 'lucide-react'
 import { RiInstagramLine, RiWhatsappLine } from 'react-icons/ri'
 import FooterBanner from './FooterBanner'
 
+const SOCIAL_LINKS = [
+  { Icon: RiInstagramLine, href: 'https://www.instagram.com/yasser_sshd/' },
+  { Icon: RiWhatsappLine, href: 'https://wa.me/213561419431' },
+]
+
+function SocialIcons() {
+  return (
+    <div style={{ display: 'flex', gap: '8px' }}>
+      {SOCIAL_LINKS.map(({ Icon, href }, i) => (
+        <a
+          key={i}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ width: '34px', height: '34px', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', transition: 'all 0.2s ease', cursor: 'pointer' }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#FFFFFF' }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#666' }}
+        >
+          <Icon size={20} />
+        </a>
+      ))}
+    </div>
+  )
+}
+
 export default function Footer() {
   return (
     <>
@@ -12,43 +37,21 @@ export default function Footer() {
 
       <footer style={{ background: '#080808', borderTop: '1px solid #1E1E1E' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '60px 24px 40px' }}>
-        <div style={{ display: 'grid',gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))' , gap: '48px', marginBottom: '48px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '48px', marginBottom: '48px' }}>
 
           {/* Brand */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-              {/* Logo — gauche */}
-          
               <div style={{ width: '70px', height: '1px', background: '#FFFFFF', position: 'relative' }}>
+                
                 <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '5px', height: '5px', borderRadius: '50%', background: '#FFFFFF' }} />
               </div>
             </div>
             <p style={{ fontFamily: 'Inter', fontSize: '13px', lineHeight: '1.7', color: '#666', maxWidth: '260px' }}>
               Plateforme de référence pour la formation football en Algérie. Développement technique, tactique et mental pour tous les niveaux.
             </p>
-            <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexDirection: 'column', alignItems: 'flex-start' }}>
-              <p style={{ fontFamily: 'Syne', fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#', marginBottom: '6px' }}>
-                Follow us
-              </p>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {[
-                  { Icon: RiInstagramLine, href: 'https://www.instagram.com/yasser_sshd/' },
-                  { Icon: RiWhatsappLine, href: 'https://wa.me/213561419431' },
-                ].map(({ Icon, href }, i) => (
-                  <a
-                    key={i}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ width: '34px', height: '34px', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', transition: 'all 0.2s ease', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.color = '#FFFFFF' }}
-                    onMouseLeave={e => { e.currentTarget.style.color = '#666' }}
-                  >
-                    <Icon size={20} />
-                  </a>
-                ))}
-              </div>
-            </div>
+
+            
           </div>
 
           {/* Navigation */}
@@ -102,6 +105,8 @@ export default function Footer() {
               </div>
             ))}
           </div>
+
+          
         </div>
 
         {/* Bottom bar */}
@@ -115,6 +120,14 @@ export default function Footer() {
         </div>
       </div>
       </footer>
+
+      <style jsx>{`
+        .footerSocialMobile { display: none; }
+        @media (max-width: 640px) {
+          .footerSocialDesktop { display: none; }
+          .footerSocialMobile { display: block; }
+        }
+      `}</style>
     </>
   )
 }

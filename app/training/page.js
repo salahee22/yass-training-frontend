@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { ArrowRight, Filter, Clock, Target, Package, ChevronDown, Zap } from 'lucide-react'
+import { ArrowRight, Filter, Clock, Target, Package, ChevronDown, Zap, ImageOff } from 'lucide-react'
 import Link from 'next/link'
 
 const ageFilters = ['Tous', 'U7', 'U9', 'U11', 'U13', 'U15', 'U17', 'Senior']
@@ -28,7 +28,7 @@ export default function TrainingPage() {
       } finally {
         setLoading(false)
       }
-    }
+    }   
     fetchExercises()
   }, [])
 
@@ -69,7 +69,6 @@ export default function TrainingPage() {
   return (
     <div style={{ backgroundColor: '#FFFFFF', paddingTop: '68px', paddingBottom: '60px', minHeight: '100vh' }}>
 
-      {/* HERO */}
       <section style={{ position: 'relative', height: '65vh', minHeight: '480px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <div style={{
           position: 'absolute', inset: 0,
@@ -88,7 +87,6 @@ export default function TrainingPage() {
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '45px', background: 'linear-gradient(to top, #FFFFFF, transparent)' }} />
       </section>
 
-      {/* Featured exercises */}
       <section className="pageSection" style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 24px 60px', background: '#FFFFFF' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
           <div>
@@ -110,7 +108,6 @@ export default function TrainingPage() {
         </div>
       </section>
 
-      {/* All training */}
       <section id="entrainements" className="pageSection" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px 0', background: '#FFFFFF' }}>
         <div className="tabPills" style={{ display: 'flex', gap: '0', border: '1px solid #E0E0E0', borderRadius: '10px', overflow: 'hidden', maxWidth: '400px', width: '100%', marginBottom: '48px' }}>
           {[
@@ -214,9 +211,14 @@ export default function TrainingPage() {
   )
 }
 
+// Carte condensée : titre, thème, sous-thèmes et catégories uniquement — plus de
+// description/objectif/matériel en légende (trop de texte).
 function ExerciseCard({ exercise, levelColors, featured = false }) {
+  const tags = [...(exercise.categories || []), ...(exercise.subThemes || [])]
+
   return (
-    <div
+    <Link
+      href={`/training/${exercise._id}`}
       style={{
         overflow: 'hidden',
         cursor: 'pointer',
@@ -224,6 +226,10 @@ function ExerciseCard({ exercise, levelColors, featured = false }) {
         background: '#141414',
         boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
         transition: 'box-shadow 0.3s ease, transform 0.3s ease',
+        textDecoration: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
       }}
       onMouseEnter={e => {
         e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.18)'
@@ -234,55 +240,39 @@ function ExerciseCard({ exercise, levelColors, featured = false }) {
         e.currentTarget.style.transform = 'translateY(0)'
       }}
     >
-      <div style={{ position: 'relative', height: featured ? '260px' : '190px', overflow: 'hidden' }}>
-        <img src={exercise.image} alt={exercise.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      <div style={{ position: 'relative', height: '220px', overflow: 'hidden', background: '#1E1E1E', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        {exercise.image ? (
+          <img src={exercise.image} alt={exercise.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <ImageOff size={28} color="#444" />
+        )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2))' }} />
-
-        <div style={{ position: 'absolute', bottom: '12px', right: '12px' }}>
-          <span style={{
-            background: 'rgba(30,30,30,0.9)',
-            color: '#FFFFFF',
-            fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700,
-            textTransform: 'uppercase', padding: '3px 8px', borderRadius: '2px',
-          }}>
-            {exercise.age}
-          </span>
-        </div>
       </div>
-      <div style={{ padding: '18px 20px 22px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-          <span style={{
-            fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700,
-            letterSpacing: '0.12em', textTransform: 'uppercase',
-            color: '#FFFFFF', display: 'block', marginBottom: '6px',
-          }}>{exercise.theme}</span>
-        </div>
+      <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <span style={{
+          fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700,
+          letterSpacing: '0.12em', textTransform: 'uppercase',
+          color: '#999999', display: 'block', marginBottom: '6px',
+        }}>{exercise.theme}</span>
+
         <h3 style={{ fontFamily: 'Syne, sans-serif', fontSize: '15px', fontWeight: 700, color: '#FFFFFF', marginBottom: '12px' }}>{exercise.name}</h3>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '14px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-            <span aria-hidden="true" style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#FFF', marginTop: '6px', flexShrink: 0 }} />
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#DDD', lineHeight: '1.4' }}>{exercise.objective}</span>
+        {tags.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '16px' }}>
+            {tags.slice(0, 4).map((t, i) => (
+              <span key={`${t}-${i}`} style={{ background: '#1E1E1E', color: '#AAA', fontFamily: 'Inter, sans-serif', fontSize: '11px', padding: '3px 9px', borderRadius: '3px' }}>{t}</span>
+            ))}
           </div>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-            <span aria-hidden="true" style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#AAA', marginTop: '6px', flexShrink: 0 }} />
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#AAA' }}>{exercise.material}</span>
-          </div>
-        </div>
+        )}
 
-        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', lineHeight: '1.6', color: '#AAA', marginBottom: '16px', borderTop: '1px solid #1E1E1E', paddingTop: '12px' }}>{exercise.description}</p>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#FFF' }}>
-          <Link href={`/training/${exercise._id}`} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', color: '#FFFFFF' }}>
-            <span style={{ fontFamily: 'Syne, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Voir l&apos;entraînement</span>
-            <ArrowRight size={12} />
-          </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#FFF', marginTop: 'auto' }}>
+          <span style={{ fontFamily: 'Syne, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Voir l&apos;entraînement</span>
+          <ArrowRight size={12} />
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
-
 function MultiDropdown({ label, options, selected, onChange }) {
   const [open, setOpen] = useState(false)
   const toggle = opt => selected.includes(opt) ? onChange(selected.filter(s => s !== opt)) : onChange([...selected, opt])

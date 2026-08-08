@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, useRef, use } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ChevronRight, ChevronDown } from 'lucide-react'
 
@@ -9,6 +9,10 @@ export default function ArticlePage({ params }) {
   const [loading, setLoading] = useState(true)
   const [otherArticles, setOtherArticles] = useState([])
   const [activeSection, setActiveSection] = useState(0)
+  const [navFixed, setNavFixed] = useState(false)
+  const [navHeight, setNavHeight] = useState(0)
+  const navRef = useRef(null)
+  const navOffsetTop = useRef(0)
 
   useEffect(() => {
     async function fetchData() {
@@ -36,24 +40,42 @@ export default function ArticlePage({ params }) {
     return () => document.body.classList.remove('hide-footer-banner')
   }, [])
 
-  useEffect(() => {
-    if (!article) return
-    const totalSections = (article.chapters?.length || 0) + 2
-    const handleScroll = () => {
-      for (let i = totalSections - 1; i >= 0; i--) {
-        const el = document.getElementById(`section-${i}`)
-        if (el) {
-          const rect = el.getBoundingClientRect()
-          if (rect.top <= 160) {
-            setActiveSection(i)
-            break
-          }
+ useEffect(() => {
+  if (!article) return
+  const totalSections = (article.chapters?.length || 0) + 2
+
+  const measureNav = () => {
+    if (navRef.current) {
+      setNavHeight(navRef.current.offsetHeight)
+      if (!navFixed) {
+        navOffsetTop.current = navRef.current.getBoundingClientRect().top + window.scrollY
+      }
+    }
+  }
+  const t = setTimeout(measureNav, 50)
+
+  const handleScroll = () => {
+    for (let i = totalSections - 1; i >= 0; i--) {
+      const el = document.getElementById(`section-${i}`)
+      if (el) {
+        const rect = el.getBoundingClientRect()
+        if (rect.top <= 160) {
+          setActiveSection(i)
+          break
         }
       }
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [article])
+    setNavFixed(window.scrollY >= navOffsetTop.current - 68)
+  }
+
+  window.addEventListener('scroll', handleScroll)
+  window.addEventListener('resize', measureNav)
+  return () => {
+    clearTimeout(t)
+    window.removeEventListener('scroll', handleScroll)
+    window.removeEventListener('resize', measureNav)
+  }
+}, [article])
 
   const scrollToSection = (i) => {
     const el = document.getElementById(`section-${i}`)
@@ -122,26 +144,62 @@ export default function ArticlePage({ params }) {
         </div>
       )}
 
-      {/* NAV SECTIONS — dropdown unique, plus de liste défilante */}
-<div style={{ borderBottom: '1px solid #E8E8E8', background: '#FAFAFA', position: 'sticky', top: '68px', zIndex: 100 }}>
-  <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '10px 24px' }}>
-    <div style={{ position: 'relative', maxWidth: '260px' }}>
-      <select
-        value={activeSection}
-        onChange={e => scrollToSection(Number(e.target.value))}
-        style={{
-          width: '100%', appearance: 'none', WebkitAppearance: 'none',
-          background: '#FFF', border: '1px solid #DDD', borderRadius: '8px',
-          padding: '10px 36px 10px 14px', fontFamily: 'Inter, sans-serif',
-          fontSize: '13px', fontWeight: 600, color: '#111', outline: 'none',
-          cursor: 'pointer',
-        }}
-      >
-        {sections.map((s, i) => (
-          <option key={i} value={i}>{s}</option>
-        ))}
-      </select>
-      <ChevronDown size={16} color="#888" style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+      {/* NAV SECTIONS */}
+{navFixed && <div style={{ height: `${navHeight}px` }} />}
+<div
+  ref={navRef}
+  style={{
+    borderBottom: '1px solid #E8E8E8',
+    background: '#FAFAFA',
+    position: navFixed ? 'fixed' : 'relative',
+    top: navFixed ? '68px' : 'auto',
+    left: 0,
+    right: 0,
+    zIndex: 100,
+  }}
+>
+  <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 24px' }}>
+    {/* Desktop — tabs horizontales */}
+    <div className="articleNavDesktop" style={{ display: 'flex' }}>
+      {sections.map((s, i) => (
+        <button
+          key={i}
+          onClick={() => scrollToSection(i)}
+          style={{
+            fontFamily: 'Inter, sans-serif', fontSize: '13px',
+            fontWeight: activeSection === i ? 600 : 400,
+            color: activeSection === i ? '#111' : '#888',
+            background: 'none', border: 'none', cursor: 'pointer',
+            padding: '14px 20px',
+            borderBottom: activeSection === i ? '2px solid #111' : '2px solid transparent',
+            transition: 'all 0.2s ease', whiteSpace: 'nowrap',
+          }}
+        >
+          {s}
+        </button>
+      ))}
+    </div>
+
+    {/* Mobile — dropdown */}
+    <div className="articleNavMobile" style={{ padding: '10px 0' }}>
+      <div style={{ position: 'relative', maxWidth: '260px' }}>
+        <select
+          value={activeSection}
+          onChange={e => scrollToSection(Number(e.target.value))}
+          style={{
+            width: '100%', appearance: 'none', WebkitAppearance: 'none',
+            background: '#FFF', border: '1px solid #DDD', borderRadius: '8px',
+            padding: '10px 36px 10px 14px', fontFamily: 'Inter, sans-serif',
+            fontSize: '13px', fontWeight: 600, color: '#111', outline: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          {sections.map((s, i) => (
+            <option key={i} value={i}>{s}</option>
+          ))}
+        </select>
+        <ChevronDown size={16} color="#888" style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+      </div>
     </div>
   </div>
 </div>
@@ -259,12 +317,12 @@ export default function ArticlePage({ params }) {
         {/* RIGHT SIDEBAR */}
         <div style={{ position: 'relative', alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: '28px', minHeight: '100%', paddingTop: '22px' }}>
 
-          {content.sidebar.parcours && (
+          {content.sidebar.parcours?.items?.length > 0 && (
             <div style={{ paddingBottom: '32px', borderBottom: '1px solid #E8E8E8' }}>
               <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#111', marginBottom: '20px' }}>
                 {content.sidebar.parcours.title}
               </p>
-              {content.sidebar.parcours.items?.map((item, i) => (
+              {content.sidebar.parcours.items.map((item, i) => (
                 <div key={i} style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
                   <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 700, color: '#C8A84B', flexShrink: 0, paddingTop: '2px' }}>{item.year}</span>
                   <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', lineHeight: '1.6', color: '#555' }}>{item.text}</p>
@@ -273,7 +331,7 @@ export default function ArticlePage({ params }) {
             </div>
           )}
 
-          {content.sidebar.expert && (
+          {content.sidebar.expert?.name && (
             <div style={{ background: '#0A0A0A', padding: '24px', borderRadius: '4px' }}>
               <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: 900, fontStyle: 'italic', color: '#FFFFFF', marginBottom: '12px', lineHeight: '1.3' }}>
                 {content.sidebar.expert.name}
@@ -284,7 +342,7 @@ export default function ArticlePage({ params }) {
             </div>
           )}
 
-          {content.sidebar.expert?.keyFigures?.length > 0 && (
+          {content.sidebar.expert?.name && content.sidebar.expert?.keyFigures?.length > 0 && (
             <div style={{ paddingBottom: '24px', borderBottom: '1px solid #E8E8E8' }}>
               <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#111', marginBottom: '16px' }}>
                 Chiffres clés
@@ -303,20 +361,22 @@ export default function ArticlePage({ params }) {
           <div style={{ flex: 1 }} />
 
           {otherArticles.length > 0 && (
-            <div>
-              <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: '17px', fontWeight: 800, fontStyle: 'italic', color: '#0A0A0A', marginBottom: '10px' }}>
-                Autres contenus
-              </h3>
-              <div style={{ width: '28px', height: '2px', background: '#0A0A0A', marginBottom: '20px' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                {otherArticles.map(a => (
-                  <Link key={a._id} href={`/football/${a._id}`} style={{ display: 'block', borderRadius: '6px', overflow: 'hidden' }}>
-                    <img src={a.image} alt={a.title} style={{ width: '100%', height: '110px', objectFit: 'cover', display: 'block' }} />
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
+        <div>
+    <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: '17px', fontWeight: 800, fontStyle: 'italic', color: '#0A0A0A', marginBottom: '10px' }}>
+      Autres contenus
+    </h3>
+    <div style={{ width: '70px', height: '1px', background: '#0A0A0A', position: 'relative', marginBottom: '20px' }}>
+      <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '5px', height: '5px', borderRadius: '50%', background: '#0A0A0A' }} />
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      {otherArticles.map(a => (
+        <Link key={a._id} href={`/football/${a._id}`} style={{ display: 'block', borderRadius: '6px', overflow: 'hidden' }}>
+          <img src={a.image} alt={a.title} style={{ width: '100%', height: '80px', objectFit: 'cover', display: 'block' }} />
+        </Link>
+      ))}
+    </div>
+      </div>
+    )} 
 
           <Link
             href="/elite"
@@ -334,7 +394,6 @@ export default function ArticlePage({ params }) {
       </div>
 
       <style jsx>{`
-        
         @media (max-width: 900px) {
           .mainGrid {
             grid-template-columns: 1fr !important;
@@ -352,8 +411,12 @@ export default function ArticlePage({ params }) {
             aspect-ratio: 16 / 10;
             margin: 0 0 16px 0 !important;
           }
-          
         }
+          .articleNavMobile { display: none; }
+@media (max-width: 640px) {
+  .articleNavDesktop { display: none !important; }
+  .articleNavMobile { display: block !important; }
+}
       `}</style>
     </div>
   )

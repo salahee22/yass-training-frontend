@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, ImageOff } from 'lucide-react'
 
 export default function DashboardExercices() {
   const [exercices, setExercices] = useState([])
@@ -75,7 +75,13 @@ export default function DashboardExercices() {
                 borderBottom: i < exercices.length - 1 ? '1px solid #1E1E1E' : 'none',
               }}
             >
-              <img src={ex.image} alt={ex.name} style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
+              {ex.image ? (
+                <img src={ex.image} alt={ex.name} style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
+              ) : (
+                <div style={{ width: '56px', height: '56px', borderRadius: '6px', flexShrink: 0, background: '#1E1E1E', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ImageOff size={18} color="#444" />
+                </div>
+              )}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 700, color: '#FFF', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {ex.name}

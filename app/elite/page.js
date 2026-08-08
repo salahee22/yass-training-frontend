@@ -114,7 +114,7 @@ window.location.href = json.data.checkout_url
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.93) 0%, rgba(0,0,0,0.65) 60%, rgba(30,20,0,0.4) 100%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', maxWidth: '1280px', margin: '0 auto', padding: '0 24px', width: '100%' }}>
           <h1 style={{ fontFamily: 'Inter, sans-serif', fontStyle: 'italic', fontWeight: 900, fontSize: 'clamp(40px, 10vw, 100px)', lineHeight: '1', color: '#FFFFFF', marginBottom: '24px' }}>
-           Programme<br /><span style={{ color: '#C8A84B' }}>ELITE</span>
+           Programme<br /><span >Elite</span>
          </h1>
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '18px', lineHeight: '1.7', color: 'rgba(255,255,255,0.6)', maxWidth: '520px', marginBottom: '40px' }}>
             Atteignez votre meilleur niveau. Un coaching d'exception réservé aux joueurs qui veulent franchir un cap décisif.
@@ -137,17 +137,8 @@ window.location.href = json.data.checkout_url
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 24px 60px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '40px', flexWrap: 'wrap' }}>
           <div style={{ maxWidth: '480px' }}>
             <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: 600, fontStyle: 'italic', color: 'rgba(255,255,255,0.5)', display: 'flex', marginBottom: '16px', marginTop: '-8px', paddingLeft: '7px' }}>Pourquoi Nous</span>
-            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, fontStyle: 'italic', color: '#FFFFFF', lineHeight: '1.1', textTransform: 'uppercase', marginBottom: '0' }}>
-              L'EXCELLENCE COMME<br />
-              <span style={{ color: '#C8A84B' }}>STANDARD.</span>
-            </h2>
           </div>
-          <div style={{ maxWidth: '340px', paddingTop: '26px' }}>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', lineHeight: '1.7', color: '#888', fontStyle: 'italic' }}>
-              Une approche scientifique de l'entraînement. Conçu pour ceux qui exigent la précision cinétique et des résultats mesurables.
-            </p>
-          </div>
-        </div>
+           </div>
 
         <div className="whyUsGrid" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px 80px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0' }}>
           {[
@@ -223,7 +214,7 @@ window.location.href = json.data.checkout_url
             <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: 600, color: '#333', fontStyle: 'italic', display: 'flex', marginBottom: '16px', marginTop: '-8px', paddingLeft: '7px' }}>Nos coachs</span>
             <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, fontStyle: 'italic', color: '#111', lineHeight: '1.1', textTransform: 'uppercase' }}>
               DES ENTRAÎNEURS QUALIFIÉS<br />
-              <span style={{ color: '#C8A84B' }}>FORMÉS et Certifiés.</span>
+              <span >FORMÉS et Certifiés.</span>
             </h2>
           </div>
           <div style={{ maxWidth: '340px', paddingTop: '26px' }}>
@@ -486,20 +477,28 @@ function CoachCardLight({ coach }) {
       onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
     >
       {/* Photo */}
-      <div style={{
-        height: '260px',
-        background: 'linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        position: 'relative', overflow: 'hidden',
-      }}>
-        {coach.image ? (
-          <img
-            src={coach.image}
-            alt={coach.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          />
-        ) : null}
-      </div>
+<div
+  style={{
+    width: '100%',
+    height: '280px', // hauteur fixe pour toutes les cards
+    overflow: 'hidden',
+    background: '#1A1A1A',
+  }}
+>
+  {coach.image && (
+    <img
+      src={coach.image}
+      alt={coach.name}
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover', // remplit le cadre sans déformer l'image
+        objectPosition: 'center top', // garde le visage visible si la photo est cadrée en portrait
+        display: 'block',
+      }}
+    />
+  )}
+</div>
 
       {/* Info */}
       <div style={{ padding: '16px' }}>
